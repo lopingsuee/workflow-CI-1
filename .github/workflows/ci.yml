@@ -34,4 +34,5 @@ jobs:
       - name: 🚀 Run MLflow Project
         run: |
           cd MLProject
+          conda activate student_performance_env
           mlflow run . -P data_path=siswa_clean.csv
