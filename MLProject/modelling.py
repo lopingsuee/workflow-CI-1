@@ -1,3 +1,7 @@
+# =========================================
+# 🧠 MODELLING.PY — Final Version (Lokal + CI)
+# =========================================
+
 import pandas as pd
 import numpy as np
 import mlflow
@@ -43,10 +47,10 @@ def train_model(data: pd.DataFrame):
 
     # Konfigurasi MLflow
     mlflow.set_experiment("student-performance")
-    # mlflow.sklearn.autolog()
+    mlflow.sklearn.autolog()
 
-    # Jalankan training dengan MLflow Tracking
-    with mlflow.start_run(run_name="logistic_regression_CI"):
+    # Jalankan training dengan MLflow Tracking (nested run aman untuk CI)
+    with mlflow.start_run(run_name="logistic_regression_CI", nested=True):
         model = LogisticRegression(max_iter=1000)
         model.fit(X_train, y_train)
 
@@ -65,14 +69,8 @@ def train_model(data: pd.DataFrame):
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred))
 
-        # Log metrik tambahan ke MLflow
-        mlflow.log_metric("accuracy", acc)
-        mlflow.log_metric("precision", prec)
-        mlflow.log_metric("recall", rec)
-        mlflow.log_metric("f1_score", f1)
-
-        # Simpan model sebagai artifact
-        mlflow.sklearn.log_model(model, artifact_path="model")
+        # Metrik tambahan sudah otomatis dicatat oleh autolog
+        # Model juga otomatis tersimpan oleh autolog
 
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
 
