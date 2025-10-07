@@ -14,9 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 🔹 Step 1: Checkout repository
       - name: 🔹 Checkout repository
         uses: actions/checkout@v3
 
+      # 🔹 Step 2: Setup Miniconda environment
       - name: 🔹 Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -26,13 +28,21 @@ jobs:
           auto-activate-base: false
           use-mamba: true
 
-      - name: 🔹 Install dependencies
+      # 🔹 Step 3: Verify environment setup
+      - name: 🔹 Verify Conda Environment
+        shell: bash -l {0}
         run: |
           conda info
           conda list
 
+      # 🚀 Step 4: Run MLflow Project (training model)
       - name: 🚀 Run MLflow Project
+        shell: bash -l {0} # penting agar conda aktif di shell login
         run: |
           cd MLProject
+          echo "🔧 Menginisialisasi environment MLflow..."
+          conda init bash
+          source ~/.bashrc
           conda activate student_performance_env
+          echo "🚀 Menjalankan MLflow project..."
           mlflow run . -P data_path=siswa_clean.csv
