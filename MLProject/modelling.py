@@ -47,7 +47,7 @@ def train_model(data: pd.DataFrame):
 
     # Konfigurasi MLflow
     mlflow.set_experiment("student-performance")
-    mlflow.sklearn.autolog()
+    # mlflow.sklearn.autolog()
 
     # Jalankan training dengan MLflow Tracking
     with mlflow.start_run(run_name="logistic_regression_CI"):
