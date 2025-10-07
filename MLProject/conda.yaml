@@ -1,0 +1,12 @@
+name: student-performance-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - scikit-learn
+  - pandas
+  - numpy
+  - mlflow
+  - matplotlib
+  - seaborn

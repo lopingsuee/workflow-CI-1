@@ -1,0 +1,36 @@
+name: ML Model CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔹 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🔹 Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: student_performance_env
+          environment-file: MLProject/conda.yaml
+          python-version: 3.9
+          auto-activate-base: false
+
+      - name: 🔹 Install dependencies
+        run: |
+          conda info
+          conda list
+
+      - name: 🚀 Run MLflow Project
+        run: |
+          cd MLProject
+          mlflow run . -P data_path=siswa_clean.csv
