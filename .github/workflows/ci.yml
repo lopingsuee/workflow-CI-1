@@ -24,6 +24,7 @@ jobs:
           environment-file: MLProject/conda.yaml
           python-version: 3.9
           auto-activate-base: false
+          use-mamba: true
 
       - name: 🔹 Install dependencies
         run: |
