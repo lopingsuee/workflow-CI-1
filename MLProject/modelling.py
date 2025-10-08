@@ -40,31 +40,16 @@ def train_model(data: pd.DataFrame):
     mlflow.sklearn.autolog()
 
     # Jalankan training dengan MLflow Tracking (CI friendly)
-        # Jalankan training dengan MLflow Tracking (CI friendly)
-        if mlflow.active_run() is None:
+    if mlflow.active_run() is None:
         with mlflow.start_run(run_name="logistic_regression_CI"):
+            model = LogisticRegression(max_iter=1000)
+            model.fit(X_train, y_train)
+    else:
+        # Jika sudah ada run aktif (misalnya saat CI/CD), langsung jalankan saja
         model = LogisticRegression(max_iter=1000)
         model.fit(X_train, y_train)
 
-        # Prediksi dan evaluasi
-        y_pred = model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        prec = precision_score(y_test, y_pred)
-        rec = recall_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
-
-        print("\n=== HASIL EVALUASI MODEL ===")
-        print(f"Akurasi     : {acc:.4f}")
-        print(f"Presisi     : {prec:.4f}")
-        print(f"Recall      : {rec:.4f}")
-        print(f"F1-Score    : {f1:.4f}")
-        print("\nClassification Report:")
-        print(classification_report(y_test, y_pred))
-else:
-    # Jika sudah ada run aktif (misalnya saat CI/CD), langsung jalankan saja
-    model = LogisticRegression(max_iter=1000)
-    model.fit(X_train, y_train)
-
+    # Prediksi dan evaluasi
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     prec = precision_score(y_test, y_pred)
@@ -78,9 +63,6 @@ else:
     print(f"F1-Score    : {f1:.4f}")
     print("\nClassification Report:")
     print(classification_report(y_test, y_pred))
-
-        # Metrik tambahan sudah otomatis dicatat oleh autolog
-        # Model juga otomatis tersimpan oleh autolog
 
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
 
