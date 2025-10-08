@@ -1,7 +1,3 @@
-# =========================================
-# 🧠 MODELLING.PY — Final Version (Lokal + CI)
-# =========================================
-
 import pandas as pd
 import numpy as np
 import mlflow
@@ -14,10 +10,6 @@ from sklearn.metrics import (
 import os
 import argparse
 
-
-# ===============================
-# 1️⃣ Fungsi untuk Load Dataset
-# ===============================
 def load_data(path: str) -> pd.DataFrame:
     """
     Memuat dataset hasil preprocessing.
@@ -28,10 +20,6 @@ def load_data(path: str) -> pd.DataFrame:
     print(f"✅ Data berhasil dimuat. Jumlah data: {data.shape}")
     return data
 
-
-# ===============================
-# 2️⃣ Fungsi untuk Training Model
-# ===============================
 def train_model(data: pd.DataFrame):
     """
     Melatih model Logistic Regression dan mencatat hasil di MLflow.
@@ -49,8 +37,8 @@ def train_model(data: pd.DataFrame):
     mlflow.set_experiment("student-performance")
     mlflow.sklearn.autolog()
 
-    # Jalankan training dengan MLflow Tracking (nested run aman untuk CI)
-    with mlflow.start_run(run_name="logistic_regression_CI", nested=True):
+    # Jalankan training dengan MLflow Tracking
+    with mlflow.start_run(run_name="logistic_regression_CI"):
         model = LogisticRegression(max_iter=1000)
         model.fit(X_train, y_train)
 
@@ -69,15 +57,17 @@ def train_model(data: pd.DataFrame):
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred))
 
-        # Metrik tambahan sudah otomatis dicatat oleh autolog
-        # Model juga otomatis tersimpan oleh autolog
+        # Log metrik manual (autolog juga tetap mencatat)
+        mlflow.log_metric("accuracy", acc)
+        mlflow.log_metric("precision", prec)
+        mlflow.log_metric("recall", rec)
+        mlflow.log_metric("f1_score", f1)
+
+        # Simpan model ke artifacts
+        mlflow.sklearn.log_model(model, artifact_path="model")
 
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
 
-
-# ===============================
-# 3️⃣ Entry Point (Lokal + CI)
-# ===============================
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Logistic Regression model for student performance")
     parser.add_argument(
