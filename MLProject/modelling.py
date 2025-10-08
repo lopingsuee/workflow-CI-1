@@ -1,7 +1,4 @@
-# =========================================
-# 🧠 MODELLING.PY — Final Version (Lokal + CI)
-# =========================================
-
+# Lokal + CI
 import pandas as pd
 import numpy as np
 import mlflow
@@ -18,10 +15,6 @@ from sklearn.metrics import (
 import os
 import argparse
 
-
-# ===============================
-# 1️⃣ Fungsi untuk Load Dataset
-# ===============================
 def load_data(path: str) -> pd.DataFrame:
     """
     Memuat dataset hasil preprocessing.
@@ -32,15 +25,10 @@ def load_data(path: str) -> pd.DataFrame:
     print(f"✅ Data berhasil dimuat. Jumlah data: {data.shape}")
     return data
 
-
-# ===============================
-# 2️⃣ Fungsi untuk Training Model
-# ===============================
 def train_model(data: pd.DataFrame):
     """
     Melatih model Logistic Regression dan mencatat hasil di MLflow.
     """
-    # Pisahkan fitur dan target
     X = data.drop(columns=["pass_status"])
     y = data["pass_status"]
 
@@ -49,22 +37,19 @@ def train_model(data: pd.DataFrame):
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
-    # Konfigurasi MLflow
     mlflow.set_experiment("student-performance")
     mlflow.sklearn.autolog()  # otomatis log model & metrik
 
-    # Training model
     model = LogisticRegression(max_iter=1000)
     model.fit(X_train, y_train)
 
-    # Prediksi dan evaluasi
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     prec = precision_score(y_test, y_pred)
     rec = recall_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
 
-    print("\n=== HASIL EVALUASI MODEL ===")
+    print("\n HASIL EVALUASI MODEL ")
     print(f"Akurasi     : {acc:.4f}")
     print(f"Presisi     : {prec:.4f}")
     print(f"Recall      : {rec:.4f}")
@@ -75,9 +60,6 @@ def train_model(data: pd.DataFrame):
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
 
 
-# ===============================
-# 3️⃣ Entry Point (Lokal + CI)
-# ===============================
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Train Logistic Regression model for student performance"
@@ -90,6 +72,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # Load data dan training model
     data = load_data(args.data_path)
     train_model(data)
