@@ -1,0 +1,10 @@
+artifact_location: file:///home/umaygans/tugas_msml/workflow-CI/MLProject/mlruns/754127313164067471/models/m-3edfa8b3a9c6476a97e4438df50596d9/artifacts
+creation_timestamp: 1759937654097
+experiment_id: '754127313164067471'
+last_updated_timestamp: 1759937655772
+model_id: m-3edfa8b3a9c6476a97e4438df50596d9
+model_type: null
+name: model
+source_run_id: c96a66d1b45d4b43851a29eaa108acf7
+status: 2
+status_message: null

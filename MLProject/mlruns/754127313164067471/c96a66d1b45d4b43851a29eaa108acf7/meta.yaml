@@ -1,0 +1,14 @@
+artifact_uri: file:///home/umaygans/tugas_msml/workflow-CI/MLProject/mlruns/754127313164067471/c96a66d1b45d4b43851a29eaa108acf7/artifacts
+end_time: 1759937657945
+entry_point_name: ''
+experiment_id: '754127313164067471'
+lifecycle_stage: active
+run_id: c96a66d1b45d4b43851a29eaa108acf7
+run_name: logistic_regression_CI
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1759937654039
+status: 3
+tags: []
+user_id: umaygans
