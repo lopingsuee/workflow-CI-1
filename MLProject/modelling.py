@@ -24,10 +24,6 @@ def load_data(path: str) -> pd.DataFrame:
     print(f"✅ Data berhasil dimuat. Jumlah data: {data.shape}")
     return data
 
-
-# ===============================
-# 2️⃣ Fungsi untuk Training Model
-# ===============================
 def train_model(data: pd.DataFrame):
     """
     Melatih model Logistic Regression dan mencatat hasil di MLflow.
@@ -43,8 +39,7 @@ def train_model(data: pd.DataFrame):
 
     # Konfigurasi MLflow
     mlflow.set_experiment("student-performance")
-    # mlflow.set_experiment("student-performance")
-    mlflow.sklearn.autolog()
+    # mlflow.sklearn.autolog()
 
     # Jalankan training dengan MLflow Tracking (nested run aman untuk CI)
     with mlflow.start_run(run_name="logistic_regression_CI", nested=True):
@@ -67,15 +62,9 @@ def train_model(data: pd.DataFrame):
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred))
 
-        # Metrik tambahan sudah otomatis dicatat oleh autolog
-        # Model juga otomatis tersimpan oleh autolog
-
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
 
 
-# ===============================
-# 3️⃣ Entry Point (Lokal + CI)
-# ===============================
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Logistic Regression model for student performance")
     parser.add_argument(
