@@ -21,6 +21,7 @@ def load_data(path: str) -> pd.DataFrame:
     print(f"✅ Data berhasil dimuat. Jumlah data: {data.shape}")
     return data
 
+
 def train_model(data: pd.DataFrame):
     """
     Melatih model Logistic Regression dan mencatat hasil di MLflow.
@@ -36,11 +37,12 @@ def train_model(data: pd.DataFrame):
 
     # Konfigurasi MLflow
     mlflow.set_experiment("student-performance")
-    # mlflow.set_experiment("student-performance")
     mlflow.sklearn.autolog()
 
-    # Jalankan training dengan MLflow Tracking (nested run aman untuk CI)
-    with mlflow.start_run(run_name="logistic_regression_CI"):
+    # Jalankan training dengan MLflow Tracking (CI friendly)
+        # Jalankan training dengan MLflow Tracking (CI friendly)
+        if mlflow.active_run() is None:
+        with mlflow.start_run(run_name="logistic_regression_CI"):
         model = LogisticRegression(max_iter=1000)
         model.fit(X_train, y_train)
 
@@ -58,11 +60,30 @@ def train_model(data: pd.DataFrame):
         print(f"F1-Score    : {f1:.4f}")
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred))
+else:
+    # Jika sudah ada run aktif (misalnya saat CI/CD), langsung jalankan saja
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+
+    print("\n=== HASIL EVALUASI MODEL ===")
+    print(f"Akurasi     : {acc:.4f}")
+    print(f"Presisi     : {prec:.4f}")
+    print(f"Recall      : {rec:.4f}")
+    print(f"F1-Score    : {f1:.4f}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
 
         # Metrik tambahan sudah otomatis dicatat oleh autolog
         # Model juga otomatis tersimpan oleh autolog
 
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Logistic Regression model for student performance")
