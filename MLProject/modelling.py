@@ -43,7 +43,6 @@ def train_model(data: pd.DataFrame):
 
     # Jalankan training dengan MLflow Tracking (nested run aman untuk CI)
     with mlflow.start_run(run_name="logistic_regression_CI", nested=True):
-    with mlflow.start_run(run_name="logistic_regression_CI"):
         model = LogisticRegression(max_iter=1000)
         model.fit(X_train, y_train)
 
