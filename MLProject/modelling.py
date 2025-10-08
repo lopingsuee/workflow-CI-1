@@ -22,35 +22,54 @@ def load_data(path: str) -> pd.DataFrame:
 
 def train_model(data: pd.DataFrame):
     """Melatih model Logistic Regression dan mencatat hasil di MLflow."""
+    # Pisahkan fitur dan target
     X = data.drop(columns=["pass_status"])
     y = data["pass_status"]
 
+    # Split data train-test
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
+    # Konfigurasi MLflow
     mlflow.set_experiment("student-performance")
     mlflow.sklearn.autolog()
 
-    # ✅ Perbaikan utama: izinkan nested run
-    with mlflow.start_run(run_name="logistic_regression_CI", nested=True):
+    # ✅ Cek apakah sudah ada run aktif dari MLflow (misalnya di CI)
+    active_run = mlflow.active_run()
+    if active_run:
+        print(f"ℹ️ MLflow run sudah aktif (ID: {active_run.info.run_id}), lanjut tanpa membuat run baru.")
         model = LogisticRegression(max_iter=1000)
         model.fit(X_train, y_train)
+    else:
+        # Jalankan training dengan MLflow Tracking (lokal / manual)
+        with mlflow.start_run(run_name="logistic_regression_CI", nested=True):
+            model = LogisticRegression(max_iter=1000)
+            model.fit(X_train, y_train)
 
-        # Prediksi dan evaluasi
-        y_pred = model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        prec = precision_score(y_test, y_pred)
-        rec = recall_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
+    # Prediksi dan evaluasi
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
 
-        print("\n=== HASIL EVALUASI MODEL ===")
-        print(f"Akurasi     : {acc:.4f}")
-        print(f"Presisi     : {prec:.4f}")
-        print(f"Recall      : {rec:.4f}")
-        print(f"F1-Score    : {f1:.4f}")
-        print("\nClassification Report:")
-        print(classification_report(y_test, y_pred))
+    print("\n=== HASIL EVALUASI MODEL ===")
+    print(f"Akurasi     : {acc:.4f}")
+    print(f"Presisi     : {prec:.4f}")
+    print(f"Recall      : {rec:.4f}")
+    print(f"F1-Score    : {f1:.4f}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
+
+    # Log metrik manual (aman untuk CI & lokal)
+    try:
+        mlflow.log_metric("accuracy", acc)
+        mlflow.log_metric("precision", prec)
+        mlflow.log_metric("recall", rec)
+        mlflow.log_metric("f1_score", f1)
+    except Exception as e:
+        print(f"⚠️ Peringatan: Gagal mencatat metrik di MLflow ({e})")
 
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
 
