@@ -1,3 +1,7 @@
+# =========================================
+# 🧠 MODELLING.PY — Final Version (Lokal + CI)
+# =========================================
+
 import pandas as pd
 import numpy as np
 import mlflow
@@ -5,7 +9,11 @@ import mlflow.sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score, f1_score, classification_report
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    classification_report
 )
 import os
 import argparse
@@ -24,6 +32,10 @@ def load_data(path: str) -> pd.DataFrame:
     print(f"✅ Data berhasil dimuat. Jumlah data: {data.shape}")
     return data
 
+
+# ===============================
+# 2️⃣ Fungsi untuk Training Model
+# ===============================
 def train_model(data: pd.DataFrame):
     """
     Melatih model Logistic Regression dan mencatat hasil di MLflow.
@@ -39,33 +51,37 @@ def train_model(data: pd.DataFrame):
 
     # Konfigurasi MLflow
     mlflow.set_experiment("student-performance")
-    # mlflow.sklearn.autolog()
+    mlflow.sklearn.autolog()  # otomatis log model & metrik
 
-    # Jalankan training dengan MLflow Tracking (nested run aman untuk CI)
-    with mlflow.start_run(run_name="logistic_regression_CI", nested=True):
-        model = LogisticRegression(max_iter=1000)
-        model.fit(X_train, y_train)
+    # Training model
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_train, y_train)
 
-        # Prediksi dan evaluasi
-        y_pred = model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        prec = precision_score(y_test, y_pred)
-        rec = recall_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
+    # Prediksi dan evaluasi
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
 
-        print("\n=== HASIL EVALUASI MODEL ===")
-        print(f"Akurasi     : {acc:.4f}")
-        print(f"Presisi     : {prec:.4f}")
-        print(f"Recall      : {rec:.4f}")
-        print(f"F1-Score    : {f1:.4f}")
-        print("\nClassification Report:")
-        print(classification_report(y_test, y_pred))
+    print("\n=== HASIL EVALUASI MODEL ===")
+    print(f"Akurasi     : {acc:.4f}")
+    print(f"Presisi     : {prec:.4f}")
+    print(f"Recall      : {rec:.4f}")
+    print(f"F1-Score    : {f1:.4f}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
 
     print("\n✅ Model berhasil dilatih dan dicatat di MLflow!")
 
 
+# ===============================
+# 3️⃣ Entry Point (Lokal + CI)
+# ===============================
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train Logistic Regression model for student performance")
+    parser = argparse.ArgumentParser(
+        description="Train Logistic Regression model for student performance"
+    )
     parser.add_argument(
         "--data_path",
         type=str,
