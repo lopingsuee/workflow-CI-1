@@ -1,0 +1,5 @@
+Docker Hub image:
+https://hub.docker.com/r/lopingsuee/student-performance-ci
+
+Image name:
+lopingsuee/student-performance-ci:latest

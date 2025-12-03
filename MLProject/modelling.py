@@ -15,7 +15,7 @@ def load_data(path: str) -> pd.DataFrame:
     print(f"Data berhasil dimuat. Jumlah data: {data.shape}")
     return data
 
-def train_model(data: pd.DataFrame, model_path: str):
+def train_model(data: pd.DataFrame, model_path: str, run_id_path: str = "ci_run_id.txt"):
     X = data.drop(columns=["pass_status"])
     y = data["pass_status"]
     X_train, X_test, y_train, y_test = train_test_split(
@@ -23,22 +23,31 @@ def train_model(data: pd.DataFrame, model_path: str):
     )
     mlflow.set_experiment("student-performance-ci")
     mlflow.sklearn.autolog()
-    model = LogisticRegression(max_iter=1000)
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    acc = accuracy_score(y_test, y_pred)
-    prec = precision_score(y_test, y_pred)
-    rec = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
-    print("\nHASIL EVALUASI MODEL")
-    print(f"Akurasi     : {acc:.4f}")
-    print(f"Presisi     : {prec:.4f}")
-    print(f"Recall      : {rec:.4f}")
-    print(f"F1-Score    : {f1:.4f}")
-    print("\nClassification Report:")
-    print(classification_report(y_test, y_pred))
-    joblib.dump(model, model_path)
-    print(f"\nModel disimpan ke: {model_path}")
+    with mlflow.start_run(run_name="logreg_ci") as run:
+        model = LogisticRegression(max_iter=1000)
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+        acc = accuracy_score(y_test, y_pred)
+        prec = precision_score(y_test, y_pred)
+        rec = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
+
+        print("\nHASIL EVALUASI MODEL")
+        print(f"Akurasi     : {acc:.4f}")
+        print(f"Presisi     : {prec:.4f}")
+        print(f"Recall      : {rec:.4f}")
+        print(f"F1-Score    : {f1:.4f}")
+        print("\nClassification Report:")
+        print(classification_report(y_test, y_pred))
+
+        joblib.dump(model, model_path)
+        print(f"\nModel disimpan ke: {model_path}")
+
+        run_id = run.info.run_id
+        with open(run_id_path, "w") as f:
+            f.write(run_id)
+        print(f"Run ID disimpan ke: {run_id_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
