@@ -7,5 +7,4 @@ entry_points:
     parameters:
       data_path: {type: str, default: siswa_clean.csv}
       model_path: {type: str, default: model_ci.joblib}
-      run_id_path: {type: str, default: ci_run_id.txt}
-    command: "python modelling.py --data_path {data_path} --model_path {model_path} --run_id_path {run_id_path}"
+    command: "python modelling.py --data_path {data_path} --model_path {model_path}"

@@ -15,7 +15,7 @@ def load_data(path: str) -> pd.DataFrame:
     print(f"Data berhasil dimuat. Jumlah data: {data.shape}")
     return data
 
-def train_model(data: pd.DataFrame, model_path: str, run_id_path: str):
+def train_model(data: pd.DataFrame, model_path: str):
     X = data.drop(columns=["pass_status"])
     y = data["pass_status"]
     X_train, X_test, y_train, y_test = train_test_split(
@@ -44,13 +44,8 @@ def train_model(data: pd.DataFrame, model_path: str, run_id_path: str):
     joblib.dump(model, model_path)
     print(f"\nModel disimpan ke: {model_path}")
 
-    run_id = os.environ.get("MLFLOW_RUN_ID")
-    if run_id:
-        with open(run_id_path, "w") as f:
-            f.write(run_id)
-        print(f"Run ID disimpan ke: {run_id_path}")
-    else:
-        print("Peringatan: MLFLOW_RUN_ID tidak ditemukan, run_id tidak disimpan")
+    mlflow.sklearn.save_model(model, "mlflow_model_ci")
+    print("MLflow model disimpan ke folder: mlflow_model_ci")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -68,12 +63,6 @@ if __name__ == "__main__":
         default="model_ci.joblib",
         help="Path file model yang disimpan"
     )
-    parser.add_argument(
-        "--run_id_path",
-        type=str,
-        default="ci_run_id.txt",
-        help="Path file untuk menyimpan run_id"
-    )
     args = parser.parse_args()
     data = load_data(args.data_path)
-    train_model(data, args.model_path, args.run_id_path)
+    train_model(data, args.model_path)
