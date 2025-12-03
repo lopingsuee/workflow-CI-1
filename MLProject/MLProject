@@ -1,9 +1,10 @@
-name: student_performance_project
+name: student-performance-ci
 
 conda_env: conda.yaml
 
 entry_points:
   main:
     parameters:
-      data_path: {type: str, default: "siswa_clean.csv"}
-    command: "python modelling.py --data_path {data_path}"
+      data_path: {type: str, default: siswa_clean.csv}
+      model_path: {type: str, default: model_ci.joblib}
+    command: "python modelling.py --data_path {data_path} --model_path {model_path}"
