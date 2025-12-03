@@ -35,7 +35,8 @@ jobs:
         shell: bash -l {0}
         run: |
           cd MLProject
-          mlflow run . -P data_path=siswa_clean.csv -P model_path=model_ci.joblib
+          RUN_ID_PATH="$PWD/ci_run_id.txt"
+          mlflow run . -P data_path=siswa_clean.csv -P model_path=model_ci.joblib -P run_id_path=$RUN_ID_PATH
 
       - name: Upload model artifact
         uses: actions/upload-artifact@v4
