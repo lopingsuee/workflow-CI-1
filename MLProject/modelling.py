@@ -44,14 +44,13 @@ def train_model(data: pd.DataFrame, model_path: str, run_id_path: str):
     joblib.dump(model, model_path)
     print(f"\nModel disimpan ke: {model_path}")
 
-    active_run = mlflow.active_run()
-    if active_run is not None:
-        run_id = active_run.info.run_id
+    run_id = os.environ.get("MLFLOW_RUN_ID")
+    if run_id:
         with open(run_id_path, "w") as f:
             f.write(run_id)
         print(f"Run ID disimpan ke: {run_id_path}")
     else:
-        print("Run MLflow tidak aktif, run_id tidak disimpan")
+        print("Peringatan: MLFLOW_RUN_ID tidak ditemukan, run_id tidak disimpan")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
