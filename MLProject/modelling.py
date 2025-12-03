@@ -37,7 +37,7 @@ def train_model(data: pd.DataFrame, model_path: str):
     print(f"Akurasi     : {acc:.4f}")
     print(f"Presisi     : {prec:.4f}")
     print(f"Recall      : {rec:.4f}")
-    print(f"F1-Score    : {f1:.4f}")
+    print(f"F1-Score s   : {f1:.4f}")
     print("\nClassification Report:")
     print(classification_report(y_test, y_pred))
 
