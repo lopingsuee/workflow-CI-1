@@ -21,33 +21,36 @@ def train_model(data: pd.DataFrame, model_path: str, run_id_path: str = "ci_run_
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
-    mlflow.set_experiment("student-performance-ci")
+
     mlflow.sklearn.autolog()
-    with mlflow.start_run(run_name="logreg_ci") as run:
-        model = LogisticRegression(max_iter=1000)
-        model.fit(X_train, y_train)
 
-        y_pred = model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-        prec = precision_score(y_test, y_pred)
-        rec = recall_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_train, y_train)
 
-        print("\nHASIL EVALUASI MODEL")
-        print(f"Akurasi     : {acc:.4f}")
-        print(f"Presisi     : {prec:.4f}")
-        print(f"Recall      : {rec:.4f}")
-        print(f"F1-Score    : {f1:.4f}")
-        print("\nClassification Report:")
-        print(classification_report(y_test, y_pred))
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
 
-        joblib.dump(model, model_path)
-        print(f"\nModel disimpan ke: {model_path}")
+    print("\nHASIL EVALUASI MODEL")
+    print(f"Akurasi     : {acc:.4f}")
+    print(f"Presisi     : {prec:.4f}")
+    print(f"Recall      : {rec:.4f}")
+    print(f"F1-Score    : {f1:.4f}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
 
-        run_id = run.info.run_id
+    joblib.dump(model, model_path)
+    print(f"\nModel disimpan ke: {model_path}")
+
+    run_id = os.environ.get("MLFLOW_RUN_ID")
+    if run_id:
         with open(run_id_path, "w") as f:
             f.write(run_id)
         print(f"Run ID disimpan ke: {run_id_path}")
+    else:
+        print("Peringatan: MLFLOW_RUN_ID tidak ditemukan, ci_run_id.txt tidak dibuat")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
